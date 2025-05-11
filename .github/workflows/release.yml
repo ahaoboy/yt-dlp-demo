@@ -69,7 +69,14 @@ jobs:
       - name: install cross
         if: startsWith(matrix.target, 'aarch64-linux-android')
         run: |
+          ldd --version
+
+          sudo apt update && sudo apt upgrade -y
+          sudo do-release-upgrade
+
           cargo install cross --git https://github.com/cross-rs/cross
+
+          ldd --version
 
       - uses: taiki-e/upload-rust-binary-action@v1
         with:
