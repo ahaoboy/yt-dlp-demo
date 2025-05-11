@@ -71,7 +71,7 @@ jobs:
         if: startsWith(matrix.target, 'aarch64-linux-android')
         run: |
           # brew install podman
-          # sudo apt update && sudo apt upgrade -y
+          sudo apt update && sudo apt upgrade -y
 
           echo -e "[DEFAULT]\nPrompt=normal" | sudo tee /etc/update-manager/release-upgrades
 
@@ -79,6 +79,8 @@ jobs:
 
           sudo apt-get -y install podman
           cargo install cross --git https://github.com/cross-rs/cross
+
+          ldd --version
 
       - name: build
         if: "!startsWith(matrix.target, 'aarch64-linux-android')"
