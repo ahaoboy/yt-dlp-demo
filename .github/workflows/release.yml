@@ -88,7 +88,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.target }}
-          path: yt-dlp-demo-${{ matrix.target }}.tar.xz
+          path: yt-dlp-demo-${{ matrix.target }}.tar.gz
 
       - name: build android
         if: "startsWith(matrix.target, 'aarch64-linux-android')"
@@ -103,5 +103,5 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.target }}
-          path: yt-dlp-demo-${{ matrix.target }}.tar.xz
+          path: yt-dlp-demo-${{ matrix.target }}.tar.gz
 
