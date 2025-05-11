@@ -46,7 +46,9 @@ jobs:
           # - target: aarch64-linux-android
           #   os: ubuntu-24.04
           - target: aarch64-linux-android
-            os: macos-14
+            os: ubuntu-22.04
+          # - target: aarch64-linux-android
+          #   os: macos-14
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
@@ -68,10 +70,10 @@ jobs:
       - name: install cross
         if: startsWith(matrix.target, 'aarch64-linux-android')
         run: |
-          brew install podman
+          # brew install podman
           # sudo apt update && sudo apt upgrade -y
           cargo install cross --git https://github.com/cross-rs/cross
-          # sudo apt-get -y install podman
+          sudo apt-get -y install podman
       - name: build
         if: "!startsWith(matrix.target, 'aarch64-linux-android')"
         run: |
