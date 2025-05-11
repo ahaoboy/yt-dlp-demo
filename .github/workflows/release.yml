@@ -74,14 +74,7 @@ jobs:
       - name: build
         if: "!startsWith(matrix.target, 'aarch64-linux-android')"
         run: |
-          sudo apt-get install gawk bison gcc make wget tar -y
-          wget -c https://ftp.gnu.org/gnu/glibc/glibc-2.40.tar.gz
-          tar -zxvf glibc-2.40.tar.gz
-          mkdir glibc-2.40-build && cd glibc-2.40-build
-          ../glibc-2.40/configure --prefix=/opt/glibc-2.40
-          sudo make install
 
-          ldd --version
 
 
           rustup target add ${{ matrix.target }}
@@ -102,6 +95,17 @@ jobs:
       - name: build android
         if: "startsWith(matrix.target, 'aarch64-linux-android')"
         run: |
+          # sudo apt-get install gawk bison gcc make wget tar -y
+          # wget -c https://ftp.gnu.org/gnu/glibc/glibc-2.40.tar.gz
+          # tar -zxvf glibc-2.40.tar.gz
+          # mkdir glibc-2.40-build && cd glibc-2.40-build
+          # ../glibc-2.40/configure --prefix=/opt/glibc-2.40
+          # sudo make install
+
+          sudo do-release-upgrade
+
+
+          ldd --version
           cross build --target=aarch64-linux-android --release
           mkdir zip
           cp ./target/aarch64-linux-android/release/yt-dlp-demo ./zip
