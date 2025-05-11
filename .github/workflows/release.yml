@@ -75,6 +75,7 @@ jobs:
       - name: build
         if: "!startsWith(matrix.target, 'aarch64-linux-android')"
         run: |
+          rustup target add ${{ matrix.target }}
           cargo build --release -q --target=${{ matrix.target }}
 
           mkdir zip
