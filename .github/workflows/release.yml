@@ -69,37 +69,39 @@ jobs:
       - name: install cross
         if: startsWith(matrix.target, 'aarch64-linux-android')
         run: |
-          ldd --version
-
           sudo apt update && sudo apt upgrade -y
-          # sudo do-release-upgrade
-
-          cargo install cross --git https://github.com/cross-rs/cross   --rev 7d75864e7812005156805587838f41eb3b30a270
-
-          ldd --version
-
-      - uses: taiki-e/upload-rust-binary-action@v1
-        with:
-          dry-run: ${{ !startsWith(github.ref, 'refs/tags/') }}
-          bin: yt-dlp-demo
-          target: ${{ matrix.target }}
-          token: ${{ secrets.GITHUB_TOKEN }}
-          ref: ${{ startsWith(github.ref, 'refs/tags/')  && github.ref || 'refs/tags/dummy' }}
-        env:
-          RUSTFLAGS: ${{ matrix.RUSTFLAGS }}
-      - name: Get target name for artifact
-        id: artifact-target
+          cargo install cross --git https://github.com/cross-rs/cross
+          sudo apt-get -y install podman
+      - name: build
+        if: "!startsWith(matrix.target, 'aarch64-linux-android')"
         run: |
-          target="${{ matrix.target }}"
-          if [[ -z "${target}" ]]; then
-            host=$(rustc -vV | grep -E '^host:' | cut -d' ' -f2)
-            printf '%s\n' "artifact-target=${host}" >>"${GITHUB_OUTPUT}"
-          elif [[ "${{ matrix.build-tool }}" == 'cargo-zigbuild' ]]; then
-            printf '%s\n' "artifact-target=${target%%.*}" >>"${GITHUB_OUTPUT}"
-          else
-            printf '%s\n' "artifact-target=${target}" >>"${GITHUB_OUTPUT}"
-          fi
-      - uses: actions/upload-artifact@v4
+          cargo build --release -q --target=${{ matrix.target }}
+
+          mkdir zip
+          cp ./target/${{ matrix.target }}/release/yt-dlp-demo ./zip
+          ls zip
+          tar -czf ./yt-dlp-demo-${{ matrix.target }}.tar.gz -C zip .
+
+      - name: upload
+        if: "!startsWith(matrix.target, 'aarch64-linux-android')"
+        uses: actions/upload-artifact@v4
         with:
-          name: yt-dlp-demo-${{ steps.artifact-target.outputs.artifact-target }}
-          path: yt-dlp-demo-${{ steps.artifact-target.outputs.artifact-target }}.*
+          name: ${{ matrix.target }}
+          path: yt-dlp-demo-${{ matrix.target }}.tar.xz
+
+      - name: build android
+        if: "startsWith(matrix.target, 'aarch64-linux-android')"
+        run: |
+          cross build --target=aarch64-linux-android --release
+          mkdir zip
+          cp ./target/aarch64-linux-android/release/yt-dlp-demo ./zip
+          ls zip
+          tar -czf ./yt-dlp-demo-${{ matrix.target }}.tar.gz -C zip .
+
+      - name: upload
+        if: "startsWith(matrix.target, 'aarch64-linux-android')"
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.target }}
+          path: yt-dlp-demo-${{ matrix.target }}.tar.xz
+
