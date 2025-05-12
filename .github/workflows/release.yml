@@ -46,7 +46,9 @@ jobs:
           # - target: aarch64-linux-android
           #   os: ubuntu-24.04
           - target: aarch64-linux-android
-            os: ubuntu-24.04
+            # os: ubuntu-24.04
+            os: self-hosted
+
           # - target: aarch64-linux-android
           #   os: macos-14
     runs-on: ${{ matrix.os }}
