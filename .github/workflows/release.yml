@@ -117,3 +117,9 @@ jobs:
           name: ${{ matrix.target }}
           path: yt-dlp-demo-${{ matrix.target }}.tar.gz
 
+      - name: release
+        uses: ncipollo/release-action@v1
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          artifacts: "yt-dlp-demo-${{ matrix.target }}.tar.gz"
+          allowUpdates: true
